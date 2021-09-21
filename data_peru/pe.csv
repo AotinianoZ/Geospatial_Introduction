@@ -1,0 +1,104 @@
+city,lat,lng,country,iso2,admin_name,capital,population,population_proper
+Lima,-12.0500,-77.0333,Peru,PE,Lima,primary,9848000,8894000
+Callao,-12.0611,-77.1333,Peru,PE,Callao,admin,1129854,1129854
+Arequipa,-16.3988,-71.5369,Peru,PE,Arequipa,admin,1008290,1008290
+Trujillo,-8.1119,-79.0289,Peru,PE,La Libertad,admin,919899,919899
+Chiclayo,-6.7630,-79.8366,Peru,PE,Lambayeque,admin,552508,552508
+Chimbote,-9.0745,-78.5936,Peru,PE,Ancash,,497875,497875
+Piura,-5.2008,-80.6253,Peru,PE,Piura,admin,473025,473025
+Cusco,-13.5183,-71.9781,Peru,PE,Cusco,admin,428450,428450
+Huancayo,-12.0667,-75.2167,Peru,PE,Junin,admin,378203,378203
+Iquitos,-3.7333,-73.2500,Peru,PE,Loreto,admin,377609,377609
+Pucallpa,-8.3833,-74.5500,Peru,PE,Ucayali,admin,326040,326040
+Juliaca,-15.4908,-70.1269,Peru,PE,Puno,,291189,291189
+Tacna,-18.0556,-70.2483,Peru,PE,Tacna,admin,286240,286240
+Ica,-14.0667,-75.7333,Peru,PE,Ica,admin,282407,282407
+Tarapoto,-6.4833,-76.3667,Peru,PE,San Martin,,240453,240453
+Cajamarca,-7.1644,-78.5106,Peru,PE,Cajamarca,admin,201329,201329
+Huacho,-11.1083,-77.6083,Peru,PE,Lima,admin,200585,200585
+Huanuco,-9.9294,-76.2397,Peru,PE,Huanuco,admin,196627,196627
+Ayacucho,-13.1631,-74.2244,Peru,PE,Ayacucho,admin,180766,180766
+Paita,-5.0667,-81.1000,Peru,PE,Piura,,179346,179346
+Sullana,-4.9039,-80.6853,Peru,PE,Piura,,162434,162434
+Huaycan,-12.0139,-76.8250,Peru,PE,Lima,,160000,160000
+Barranca,-10.7539,-77.7610,Peru,PE,Lima,,144381,144381
+Puno,-15.8433,-70.0236,Peru,PE,Puno,admin,128637,128637
+Huaraz,-9.5333,-77.5333,Peru,PE,Ancash,admin,118836,118836
+Pisco,-13.7100,-76.2032,Peru,PE,Ica,,109965,109965
+Talara,-4.5833,-81.2667,Peru,PE,Piura,,103200,103200
+Tumbes,-3.5667,-80.4500,Peru,PE,Tumbes,admin,96946,96946
+Chosica,-11.9361,-76.6972,Peru,PE,Lima,,88606,539
+Puerto Maldonado,-12.6000,-69.1833,Peru,PE,Madre de Dios,admin,85024,85024
+Andahuaylas,-13.6575,-73.3833,Peru,PE,Apurimac,,80000,80000
+Huaral,-11.5008,-77.2091,Peru,PE,Lima,,79011,79011
+Abancay,-13.6333,-72.8833,Peru,PE,Apurimac,admin,72277,72277
+Moquegua,-17.2000,-70.9333,Peru,PE,Moquegua,admin,69882,69882
+Chulucanas,-5.1092,-80.1625,Peru,PE,Piura,,68835,52035
+Ilo,-17.6486,-71.3306,Peru,PE,Moquegua,,66118,66118
+Chincha Alta,-13.4500,-76.1333,Peru,PE,Ica,,63671,63671
+Yurimaguas,-5.9000,-76.0833,Peru,PE,Loreto,,62903,62903
+Cerro de Pasco,-10.6864,-76.2625,Peru,PE,Pasco,admin,58899,58899
+Lambayeque,-6.7000,-79.9000,Peru,PE,Lambayeque,,58276,58276
+Sicuani,-14.2694,-71.2261,Peru,PE,Cusco,,57551,57551
+Chota,-6.5614,-78.6486,Peru,PE,Cajamarca,,54611,54611
+Tarma,-11.4167,-75.6833,Peru,PE,Junin,,54078,54078
+Jaen,-5.6992,-78.8009,Peru,PE,Cajamarca,,52493,45849
+Moyobamba,-6.0333,-76.9667,Peru,PE,San Martin,admin,50073,50073
+Huancavelica,-12.7850,-74.9714,Peru,PE,Huancavelica,admin,49570,49570
+Tingo Maria,-9.3015,-76.0361,Peru,PE,Huanuco,,46191,46191
+Bagua Grande,-5.7572,-78.4453,Peru,PE,Amazonas,,40947,40947
+Huaura,-11.1000,-77.6000,Peru,PE,Lima,,40400,20723
+Juanjui,-7.1802,-76.7265,Peru,PE,San Martin,,37715,16990
+Viru,-8.4143,-78.7524,Peru,PE,La Libertad,,36029,36029
+Chancay,-11.5653,-77.2714,Peru,PE,Lima,,35466,35466
+Forbe Oroya,-11.5333,-75.9000,Peru,PE,Junin,,33000,33000
+Sechura,-5.5576,-80.8223,Peru,PE,Piura,,32144,32144
+Chachapoyas,-6.2167,-77.8500,Peru,PE,Amazonas,admin,32026,32026
+Pativilca,-10.6996,-77.8000,Peru,PE,Lima,,31905,13583
+Ferreñafe,-6.6391,-79.7880,Peru,PE,Lambayeque,,31777,31777
+Huamachuco,-7.8121,-78.0487,Peru,PE,La Libertad,,30835,21768
+Huanta,-12.9397,-74.2475,Peru,PE,Ayacucho,,30234,30234
+Casma,-9.4742,-78.3106,Peru,PE,Ancash,,30000,24842
+Tocache Nuevo,-8.1886,-76.5103,Peru,PE,San Martin,,29029,2616
+Mollendo,-17.0167,-72.0167,Peru,PE,Arequipa,,28305,28305
+Jauja,-11.7750,-75.5000,Peru,PE,Junin,,27560,27560
+Pacasmayo,-7.4003,-79.5700,Peru,PE,La Libertad,,26125,26125
+San Vicente de Cañete,-13.0833,-76.4000,Peru,PE,Lima,,25829,25829
+Otuzco,-7.9025,-78.5657,Peru,PE,La Libertad,,25134,25134
+Santo Tomas,-14.4500,-72.0820,Peru,PE,Cusco,,25087,25087
+Caras,-9.0483,-77.8108,Peru,PE,Ancash,,23841,23841
+Nazca,-14.8289,-74.9436,Peru,PE,Ica,,22859,22859
+Juli,-16.2125,-69.4603,Peru,PE,Puno,,21462,21462
+Camana,-16.6233,-72.7092,Peru,PE,Arequipa,,20956,16434
+Ayaviri,-14.8818,-70.5901,Peru,PE,Puno,,19310,5739
+Contamana,-7.3333,-75.0167,Peru,PE,Loreto,minor,18921,13885
+Requena,-5.0569,-73.8515,Peru,PE,Loreto,,18000,16195
+Zarumilla,-3.5014,-80.2722,Peru,PE,Tumbes,,16971,16971
+San Pedro de Lloc,-7.4267,-79.5038,Peru,PE,La Libertad,,16198,16198
+Huarmey,-10.0686,-78.1603,Peru,PE,Ancash,,16172,2196
+Ilave,-16.0866,-69.6354,Peru,PE,Puno,,16033,16033
+Puquio,-14.6939,-74.1241,Peru,PE,Ayacucho,,15870,15870
+Puerto Pimentel,-6.8367,-79.9342,Peru,PE,Lambayeque,,15552,13293
+Junin,-11.1500,-75.9833,Peru,PE,Junin,,15320,7670
+San Ramon,-11.1247,-75.3569,Peru,PE,Junin,,14708,6490
+Lamas,-6.4167,-76.5333,Peru,PE,San Martin,,13693,12503
+Motupe,-6.1508,-79.7208,Peru,PE,Lambayeque,,13681,4415
+Cajabamba,-7.6237,-78.0460,Peru,PE,Cajamarca,,13486,10587
+Chilca,-12.5196,-76.7400,Peru,PE,Lima,,12884,228
+Oxapampa,-10.5800,-75.4000,Peru,PE,Pasco,,12826,12826
+Santiago,-14.1896,-75.7400,Peru,PE,Ica,,10449,10449
+Salaverry,-8.2200,-78.9900,Peru,PE,La Libertad,,10066,4390
+Satipo,-11.2522,-74.6386,Peru,PE,Junin,,10052,10052
+Olmos,-5.9796,-79.7500,Peru,PE,Lambayeque,,9800,5359
+Putina,-15.4700,-69.4300,Peru,PE,Puno,,8118,8118
+Yungay,-9.1389,-77.7444,Peru,PE,Ancash,,8000,8000
+Coracora,-15.0170,-73.7804,Peru,PE,Ayacucho,,7420,5447
+Desaguadero,-16.5684,-69.0421,Peru,PE,Puno,,5329,4911
+Chivay,-15.6333,-71.6000,Peru,PE,Arequipa,,5000,5000
+Mendoza,-6.3941,-77.4855,Peru,PE,Amazonas,,4989,4989
+Esperanza,-9.7986,-70.7533,Peru,PE,Ucayali,,4405,4405
+Paucartambo,-13.3156,-71.5917,Peru,PE,Cusco,,4309,4309
+San Miguel de Pallaques,-7.0008,-78.8495,Peru,PE,Cajamarca,,3989,3989
+Caballococha,-3.9058,-70.5164,Peru,PE,Loreto,,3195,3195
+Urubamba,-13.3042,-72.1167,Peru,PE,Cusco,,2700,2700
+Santa Maria de Nieva,-4.5988,-77.8630,Peru,PE,Amazonas,,2510,2510
