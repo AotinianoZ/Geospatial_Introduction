@@ -1,0 +1,664 @@
+---
+title: "Introduction to Geological Spatial Data - Peru in R"
+author: "A.Otiniano (Modify from Edzer Pebesma)"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+    code_folding: show
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    theme: flatly
+    highlight: "espresso"
+---
+
+# Making Maps Programming
+
+Basic libraries to start:
+
+```{r, eval=FALSE}
+#install.packages(c("cowplot", "googleway", "ggplot2", "ggrepel", 
+#"ggspatial", "libwgeom", "sf", "rnaturalearth", "rnaturalearthdata"))
+```
+
+Preparing information:
+
+```{r}
+library("ggplot2")
+theme_set(theme_bw()) #best for maps
+library("sf")
+library("plotly")
+```
+
+```{r}
+library("rnaturalearth")  #country world maps
+library("rnaturalearthdata") # necesarie to scale = "large" 
+
+mundo <- ne_countries(scale = "medium", returnclass = "sf")
+# Check some structure
+class(mundo)
+str(mundo)
+colnames(mundo)
+head(mundo, 6)
+tail(mundo, 6)
+```
+
+## Data and Basic Plots (*coord_sf* y *geom_sf*)
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+ggplot(data = mundo)+
+  geom_sf()
+```
+
+## Title, subtitle and axes labels (*ggtitle*, *xlab*, *ylab*)
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+ggplot(data = mundo)+
+  geom_sf()+
+  xlab("Longitud")+ylab("Latitude")+
+  ggtitle("World Maps", subtitle = paste0("(",length(unique(mundo$name)), "country)"))
+```
+
+## Color Map (*geom_sf*)
+
+A first simple map:
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+ggplot(data = mundo)+
+  geom_sf(color = "black", fill = "blue")
+```
+
+Generating a best map:
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+a <- ggplot(data = mundo) +
+    geom_sf(aes(fill = pop_est)) +
+    scale_fill_viridis_c(option = "plasma", trans = "sqrt")
+a
+```
+
+## Projection and Extension (*coord_sf*)
+
+**coord_sf** allow work with coordenate system including both projections and extensions of map. The argument `crs` is possible overwrite the configuration and project wherever. This can be use with all kind of validation of  **PROJ4 string**.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+ggplot(data = mundo) +
+    geom_sf() +
+    coord_sf(crs = "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs ")
+```
+
+If we want to use Spatial Reference System Identifier (SRID) or European Petroleum Survey Group (EPSG) code available for Peru:
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+ggplot(data = mundo) +
+    geom_sf() +
+    coord_sf(crs = "+init=epsg:3035")
+ggplot(data = mundo) +
+    geom_sf() +
+    coord_sf(crs = st_crs(3035))
+```
+
+We generate `zoom` in Peru to add the map of  **South America**. *Let´s go (Vamos)!*
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+ggplot(data = mundo) +
+    geom_sf() +
+    coord_sf(xlim = c(-90.00, -30.5), ylim = c(-57.00, 14.00), expand = FALSE)
+```
+
+## Arrow and Scale (**ggspatial**)
+
+Exist a variety of packages like `prettymapr, vsd, ggsn, legendMap`. We are going to use `ggspatial`. 
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+library(ggspatial)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+ggplot(data = mundo) +
+    geom_sf() +
+    annotation_scale(location = "bl", width_hint = 0.4) +
+    annotation_north_arrow(location = "bl", which_north = "true", 
+        pad_x = unit(2.70, "in"), pad_y = unit(3.80, "in"),
+        style = north_arrow_fancy_orienteering) +
+    coord_sf(xlim = c(-90.00, -30.5), ylim = c(-57.00, 14.00))
+
+## Scale on map varies by more than 10%, scale bar may be inaccurate
+```
+ 
+## Name of City and Others (*geom_text*, *annotate*)
+
+We can use like we see at the beginning of the data **world** how to regularize a *data.frame* in ggplot2. 
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+library("sf")
+sf_use_s2(FALSE)
+world_points<- st_centroid(mundo)
+world_points <- cbind(mundo, st_coordinates(st_centroid(mundo$geometry)))
+
+mundo <- mundo %>%
+  dplyr::rename(Poblacion = pop_est) 
+
+ggplot(data = mundo) +
+geom_sf(aes(fill = Poblacion)) +
+    scale_fill_viridis_c(option = "plasma", trans = "sqrt")+
+geom_text(data= world_points[world_points$continent=="South America", ],aes(x=X, y=Y, label=name),
+    color = "black", fontface = "bold", check_overlap = FALSE, size = 3) +
+annotate(geom = "text", x = -80, y = -20, label = "O. Pacífico", 
+    fontface = "italic", color = "grey22", size = 4) +
+annotation_scale(location = "bl", width_hint = 0.4) +
+    annotation_north_arrow(location = "bl", which_north = "true", 
+        pad_x = unit(2.65, "in"), pad_y = unit(3.70, "in"),
+        style = north_arrow_fancy_orienteering) +
+    coord_sf(xlim = c(-90.00, -30.5), ylim = c(-57.00, 14.00))+
+   xlab("Longitud") + ylab("Latitude") + 
+  ggtitle("Mapa de Población de Sudamérica") + 
+  theme(panel.grid.major = element_line(color = gray(.5), linetype = "dashed", size = 0.5), panel.background = element_rect(fill = "aliceblue"))
+```
+
+## Save Map
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+ggsave("map.pdf")
+ggsave("map_web.png", width = 6, height = 6, dpi = "screen")
+```
+
+# Adding Shape of Dots and Polygons:
+
+## Dot Data:
+
+Creamos puntos de Data entre la Isla San Lorenzo y Lima:
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+(sites <- data.frame(longitude = c(-78, -77), latitude = c(-11, 
+    -12.5)))
+```
+
+* Plotemos esas coordenadas (forma rapida):
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+m <- ggplot(data = mundo) +
+    geom_sf() +
+    geom_point(data = sites, aes(x = longitude, y = latitude), size = 3, 
+        shape = 23, fill = "darkred") +
+    coord_sf(xlim = c(-79, -75), ylim = c(-10, -15), expand = FALSE)
+ggplotly(m)
+```
+
+* Forma adecuada:
+
+Una alternativa mejor y más flexible es *usar el poder de sf*: convertir el marco de datos en un objeto sf permite confiar en sf para manejar sobre la marcha el sistema de coordenadas (proyección y extensión), lo cual puede ser muy útil si los dos los objetos (aquí mapa del mundo y sitios) no están en la misma proyección. Para lograr el mismo resultado, la proyección (aquí WGS84, que es el código CRS #4326) tiene que estar definida a priori en el objeto sf:
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+(sites <- st_as_sf(sites, coords = c("longitude", "latitude"), 
+    crs = 4326, agr = "constant"))
+
+```
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+ggplot(data = mundo) +
+    geom_sf() +
+    geom_sf(data = sites, size = 3, shape = 23, fill = "darkred") +
+    coord_sf(xlim = c(-80, -74), ylim = c(-8, -14), expand = FALSE)
+```
+
+## Poligonos de Data:
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+Departamento <- st_read(
+  "data_peru/DEPARTAMENTOS.shp")
+```
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+ggplot() + 
+  geom_sf(data = Departamento, size = 3, color = "black", fill = "blue" ) + 
+  ggtitle("Departamentos del Perú") + 
+  coord_sf()
+```
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+Provincias <- st_read("data_peru/PROVINCIAS.shp")
+Departamentos <- Provincias %>% group_by(DEPARTAMEN) %>%
+  dplyr::summarise(
+    tot_area = sum(Area),
+    ID = unique(IDDPTO)
+  )
+head(Departamentos)
+sf_use_s2(FALSE)
+Departamentos <- cbind(Departamentos, st_coordinates(st_centroid(Departamentos)))
+Provincias <- cbind(Provincias, st_coordinates(st_centroid(Provincias)))
+library("tools")
+Departamentos$DEPARTAMEN <- toTitleCase(Departamentos$DEPARTAMEN)
+head(Departamentos)
+
+t <- ggplot(data = mundo) +
+  geom_sf(fill = "gray90") +
+   geom_sf(data = sites, size = 5, shape = 23, fill = "darkred")+
+  geom_sf(data = Departamentos, fill = Departamentos$tot_area) + 
+    scale_fill_viridis_c(option = "plasma") +
+    geom_text(data = Departamentos, aes(X, Y, label = DEPARTAMEN), size = 3) +
+    annotation_scale(location = "bl", width_hint = 0.4) +
+  annotation_north_arrow(location = "bl", which_north = "true", 
+        pad_x = unit(0.50, "in"), pad_y = unit(0.40, "in"),
+        style = north_arrow_nautical)+
+    coord_sf(xlim = c(-80, -74), ylim = c(-10, -14), expand = FALSE)+
+  xlab("Longitud") + ylab("Latitud") +
+    ggtitle("Análisis Geoespacial", subtitle = "(Departamento Liima)") +
+    theme(panel.grid.major = element_line(color = gray(0.5), linetype = "dashed", 
+        size = 0.5), panel.background = element_rect(fill = "aliceblue"))
+```
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+db_ciudades <- read.csv(file="data_peru/pe.csv", header =  TRUE)
+cols <- c("Lima", "Cerro de Pasco", "Junin", "Huancavelica")
+db_ciudad <- db_ciudades[db_ciudades$city %in% cols, ]
+
+(flcities <- st_as_sf(db_ciudad, coords = c("lng", "lat"), remove = FALSE, 
+    crs = 4326, agr = "constant"))
+```
+
+## Agregamos labels:
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+library(ggrepel)
+tt <- ggplot(data = mundo) +
+  geom_sf(fill = "antiquewhite1") +
+  geom_sf(data = Departamentos) + 
+  geom_sf(data = Provincias[Provincias$DEPARTAMEN=="LIMA", ], 
+          aes(fill = Provincias[Provincias$DEPARTAMEN=="LIMA", ]$Area))+
+  guides(fill=guide_legend(title="Area(km^2)"))+
+  scale_fill_viridis_c(option = "plasma")+
+  geom_sf(data = sites, size = 5, shape = 23, fill = "darkred")+
+     coord_sf(xlim = c(-80, -74), ylim = c(-10, -14), expand = FALSE)+
+  geom_sf(data = flcities) +
+  geom_text_repel(data = flcities, aes(x = lng, y = lat, label = city), 
+        fontface = "bold", nudge_x = c(0.2, 0.5, 0.6, 0.6), nudge_y = c(0.25, 
+            0.25, 0.25, -0.25)) +
+  geom_label(data = Provincias[Provincias$DEPARTAMEN=="LIMA", ],
+               aes(X, Y, label = CAPITAL), size = 2) +
+  annotation_scale(location = "bl", width_hint = 0.4) +
+  annotation_north_arrow(location = "bl", which_north = "true", 
+        pad_x = unit(0.50, "in"), pad_y = unit(0.40, "in"),
+        style = north_arrow_nautical)+
+    coord_sf(xlim = c(-80, -74), ylim = c(-10, -14), expand = FALSE)+
+   xlab("Longitud") + ylab("Latitud") +
+    ggtitle("Análsis Geoespacial", subtitle = "(En provincia Lima)") +
+    theme(panel.grid.major = element_line(color = gray(0.5), linetype = "dashed", 
+        size = 0.5), panel.background = element_rect(fill = "aliceblue"))
+tt
+```
+
+# Multiples Mapas en R:
+
+## Conceptos Generales:
+
+```{r}
+(g1  <- qplot(0:10, 0:10))
+(g1_void <- g1 + theme_void() + theme(panel.border = element_rect(colour = "black", 
+    fill = NA)))
+```
+
+```{r}
+g1 +
+    annotation_custom(
+        grob = ggplotGrob(g1_void),
+        xmin = 0,
+        xmax = 3,
+        ymin = 5,
+        ymax = 10
+    ) +
+    annotation_custom(
+        grob = ggplotGrob(g1_void),
+        xmin = 5,
+        xmax = 10,
+        ymin = 0,
+        ymax = 3
+    )
+
+```
+
+```{r}
+library(cowplot) 
+ggdraw(g1) + draw_plot(g1_void, width = 0.25, height = 0.5, x = 0.02, y = 0.48) + draw_plot(g1_void, width = 0.5, height = 0.25, x = 0.75, y = 0.09)
+```
+
+```{r}
+(gworld <- ggplot(data = mundo) +
+  geom_sf(aes(fill = region_wb)) +
+  geom_rect(xmin = -102.15, xmax = -74.12, ymin = 7.65, ymax = 33.97, 
+     fill = NA, colour = "black", size = 1.5) +
+  scale_fill_viridis_d(option = "plasma") +
+  theme(panel.background = element_rect(fill = "azure"),
+     panel.border = element_rect(fill = NA)))
+```
+
+```{r}
+(ggulf <- ggplot(data = mundo) +
+  geom_sf(aes(fill = region_wb)) +
+  annotate(geom = "text", x = -90, y = 26, label = "Gulf of Mexico", 
+     fontface = "italic", color = "grey22", size = 6) +
+  coord_sf(xlim = c(-102.15, -74.12), ylim = c(7.65, 33.97), expand = FALSE) +
+  scale_fill_viridis_d(option = "plasma") +
+  theme(legend.position = "none", axis.title.x = element_blank(), 
+     axis.title.y = element_blank(), panel.background = element_rect(fill = "azure"), 
+     panel.border = element_rect(fill = NA)))
+```
+
+```{r}
+ggplot() +
+    coord_equal(xlim = c(0, 3.3), ylim = c(0, 1), expand = FALSE) +
+    annotation_custom(ggplotGrob(gworld), xmin = 0, xmax = 1.5, ymin = 0, 
+                    ymax = 1) +
+    annotation_custom(ggplotGrob(ggulf), xmin = 1.5, xmax = 3, ymin = 0, 
+                    ymax = 1) +
+    theme_void()
+```
+
+```{r}
+plot_grid(gworld, ggulf, nrow = 1, rel_widths = c(2.3, 1))
+```
+
+```{r}
+ggsave("grid.pdf", width = 15, height =  5)
+```
+
+## Inserción de Mapas:
+
+```{r}
+peru <- subset(mundo, admin =="Peru")
+map_peru <- ggplot(data = peru)+
+  geom_sf(fill="cornsilk")+
+  coord_sf(crs = st_crs(5387))
+tumbes <- ggplot(data = peru)+
+  geom_sf(fill="cornsilk")+
+coord_sf(xlim=c(-82, -80),ylim=c(-3,-5), datum = NA)
+
+ggdraw(map_peru)+
+  draw_plot(tumbes, width = 0.20, height = 0.20, x = 0.30, y = 0.20)
+```
+
+Dibujando una zona con mapas pequeños:
+
+```{r}
+sites <- st_as_sf(data.frame(longitude = c(-80.15, -80.1), latitude = c(26.5, 
+26.8)), coords = c("longitude", "latitude"), crs = 4326, 
+agr = "constant")
+
+
+(florida <- ggplot(data = mundo) +
+     geom_sf(fill = "antiquewhite1") +
+     geom_sf(data = sites, size = 4, shape = 23, fill = "darkred") +
+     annotate(geom = "text", x = -85.5, y = 27.5, label = "Gulf of Mexico", 
+         color = "grey22", size = 4.5) +
+     coord_sf(xlim = c(-87.35, -79.5), ylim = c(24.1, 30.8)) +
+     xlab("Longitude")+ ylab("Latitude")+
+     theme(panel.grid.major = element_line(colour = gray(0.5), linetype = "dashed", 
+         size = 0.5), panel.background = element_rect(fill = "aliceblue"), 
+         panel.border = element_rect(fill = NA)))
+```
+```{r}
+(siteA <- ggplot(data = mundo) +
+     geom_sf(fill = "antiquewhite1") +
+     geom_sf(data = sites, size = 4, shape = 23, fill = "darkred") +
+     coord_sf(xlim = c(-80.25, -79.95), ylim = c(26.65, 26.95), expand = FALSE) + 
+     annotate("text", x = -80.18, y = 26.92, label= "Site A", size = 6) + 
+     theme_void() + 
+     theme(panel.grid.major = element_line(colour = gray(0.5), linetype = "dashed", 
+         size = 0.5), panel.background = element_rect(fill = "aliceblue"), 
+         panel.border = element_rect(fill = NA)))
+(siteB <- ggplot(data = mundo) + 
+     geom_sf(fill = "antiquewhite1") +
+     geom_sf(data = sites, size = 4, shape = 23, fill = "darkred") +
+     coord_sf(xlim = c(-80.3, -80), ylim = c(26.35, 26.65), expand = FALSE) +
+     annotate("text", x = -80.23, y = 26.62, label= "Site B", size = 6) + 
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = gray(0.5), linetype = "dashed", 
+         size = 0.5), panel.background = element_rect(fill = "aliceblue"), 
+         panel.border = element_rect(fill = NA)))
+#Dos flechas:
+arrowA <- data.frame(x1 = 18.5, x2 = 23, y1 = 9.5, y2 = 14.5)
+arrowB <- data.frame(x1 = 18.5, x2 = 23, y1 = 8.5, y2 = 6.5)
+```
+
+Mapa Final:
+
+```{r}
+# ggplot() +
+#     coord_equal(xlim = c(0, 28), ylim = c(0, 20), expand = FALSE) +
+#     annotation_custom(ggplotGrob(florida), xmin = 0, xmax = 20, ymin = 0, 
+#         ymax = 20) +
+#     annotation_custom(ggplotGrob(siteA), xmin = 20, xmax = 28, ymin = 11.25, 
+#         ymax = 19) +
+#     annotation_custom(ggplotGrob(siteB), xmin = 20, xmax = 28, ymin = 2.5, 
+#         ymax = 10.25) +
+#     geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), data = arrowA, 
+#         arrow = arrow(), lineend = "round") +
+#     geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), data = arrowB, 
+#         arrow = arrow(), lineend = "round") +
+#     theme_void()
+#Tambien con draw_plot:
+ggdraw(xlim = c(0, 28), ylim = c(0, 20)) +
+    draw_plot(florida, x = 0, y = 0, width = 20, height = 20) +
+    draw_plot(siteA, x = 20, y = 11.25, width = 8, height = 8) +
+    draw_plot(siteB, x = 20, y = 2.5, width = 8, height = 8) +
+    geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), data = arrowA, 
+        arrow = arrow(), lineend = "round") +
+    geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), data = arrowB, 
+        arrow = arrow(), lineend = "round")
+```
+Guardando:
+
+```{r}
+ggsave("florida-sites.pdf", width = 10, height = 7)
+```
+
+
+## Generando Gráficos de Distribución y Boxplot de Areas:
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+Plot <- Provincias[Provincias$DEPARTAMEN=="LIMA", ]
+histograma <- ggplot(data=Provincias)+
+  geom_histogram(mapping = aes(x=Area))+
+  ggtitle(label = "Histograma de Areas de Lima", subtitle = "A.Otiniano")
+boxplot0 <- ggplot(data=Plot)+
+  geom_boxplot(mapping = aes(x=Area))+
+  ggtitle(label = "Boxplot de Areas de Lima", subtitle = "A.Otiniano")
+histograma
+boxplot0
+
+```
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+library(cowplot)
+plot_grid(boxplot0, histograma, nrow = 1, rel_widths = c(2.3, 1))
+```
+
+* Aplicando a Mapas:
+
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width = 8, fig.height = 5}
+histograma2 <- ggplot(data=Provincias)+
+  geom_histogram(mapping = aes(x=Area))+
+  ggtitle(label = "Histograma Area")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y = element_blank(),
+        axis.ticks.y =element_blank(),
+        axis.text.y=element_blank(),
+        panel.background =element_blank() )
+
+gg_inset_map1 <- ggdraw() +
+  draw_plot(tt) +
+  draw_plot(histograma2, x = 0.15, y = 0.32, width = 0.25, height = 0.3)
+gg_inset_map1
+
+```
+
+# Parte Final:
+
+## Extras:
+
+### ¿Cómo obtener de un poligono información de puntos?
+
+```{r, warning=FALSE, message=FALSE, fig.align='center'}
+library(sf)
+library(mapview)
+
+head(breweries)
+head(franconia)
+puntos <- as(breweries, "Spatial")
+lineas <-  as(franconia, "Spatial")
+
+#convertimos a sf:
+puntos <- st_as_sf(puntos)
+lineas <- st_as_sf(lineas)
+
+#intersectar poligonos con puntos, manteniendo amba informacion
+
+union <- st_intersection(lineas, puntos)
+colnames(puntos)
+colnames(lineas)
+colnames(union)
+```
+
+Ahora lo plotearemos para que vean su utilidad:
+
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', echo=FALSE}
+a <- ggplot(data = puntos)+
+  geom_sf(data = lineas, aes(fill = lineas$SHAPE_AREA))+
+  geom_sf(data = puntos)+
+  scale_fill_viridis_c(option = "plasma")
+a
+```
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', echo=FALSE}
+mapview(lineas, zcol = "SHAPE_LEN", legend = TRUE, color = "cyan", lwd = 3)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', echo=FALSE}
+mapview(lineas, zcol = "district") + mapview(puntos, zcol = "founded")
+```
+
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', echo=FALSE}
+m1 <- mapview(lineas, zcol = "district", col.regions = c("snow", "grey", "red"))
+m1 + puntos
+```
+
+### Graficos como pop up:
+
+Usaremos una data denominada meuse:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center' }
+#subiremos una imagen y un video, y una pagina a tres puntos:
+library(lattice)
+library(leafpop)
+library(sp)
+
+data(meuse)
+coordinates(meuse) <- ~x+y
+proj4string(meuse) <- CRS("+init=epsg:28992")
+p <- xyplot(copper ~ cadmium , data = meuse@data, col = "grey", pch = 20, cex = 2)
+p <- mget(rep("p", length(meuse)))
+
+clr <- rep("grey", length(meuse))
+p <- lapply(1:length(p), function(i) {
+  clr[i] <- "red"
+  update(p[[i]], col = clr)
+})
+m <- mapview(meuse,
+        zcol = "cadmium",
+        popup = popupGraph(p))
+
+library(leafem)
+leafem::addLogo(m, "https://jeroenooms.github.io/images/banana.gif",
+                position = "bottomleft",
+                offset.x = 5,
+                offset.y = 40,
+                width = 100,
+                height = 100)
+```
+
+# Mapa Final:
+
+## Mapa con Capas de Datos:
+
+### Puntos, Poligonos y DEM:
+
+**Falta**!!!
+
+```{r}
+my_data <- mtcars
+library(rpivotTable)
+rpivotTable(as.data.frame(my_data))
+
+```
+
+
+## Comentarios Finales:
+
+Pronto explicaremos la potencialidad geoespacial de *leaflet()*, *sf()* y *mapbox()* unidos a *plotly()* y *crosstalk()* entre otros para generar `mapas interactivos geoespaciales`. Para el análisis multiscience que considero filtros dinámicos en mapas, gráficos, tabla y cálclos estaísticos y geoestadístico interactuando simultáneamente se necesitarán algunas herramientas más que pronto veremos :D!!!.
+
+
+# Referencias Bibliográficas:
+
+* Basic Reference from [r-spatial](https://r-spatial.org/r/2018/10/25/ggplot2-sf.html).
+
+* Revisando Sistemas de Coordenadas en R [CRS](https://www.nceas.ucsb.edu/sites/default/files/2020-04/OverviewCoordinateReferenceSystems.pdf).
+
+* Working with Spatial Data [Ecolog, Statistics, and Data Science with R](https://cmerow.github.io/RDataScience/04_Spatial.html)
+
+* [Simple Feture in R](https://r-spatial.github.io/sf/).
+
+* [Geocomputation with R](https://geocompr.robinlovelace.net/adv-map.html).
+
+* [Spatial Data Science](https://keen-swartz-3146c4.netlify.app/intro.html).
+
+* [Leaflet for R](https://bookdown.org/nicohahn/making_maps_with_r5/docs/leaflet.html) y [Leaflet for R 2](https://rstudio.github.io/leaflet/).
+
+* [tmap](https://tlorusso.github.io/geodata_workshop/tmap_package) y [tmap2](https://bookdown.org/nicohahn/making_maps_with_r5/docs/tmap.html). 
+
+* [Spatial Cheatsheet](https://www.maths.lancs.ac.uk/~rowlings/Teaching/UseR2012/cheatsheet.html).
+
+* [stats into R](https://github.com/Pakillo/stats-intro).
+
+* [Raster Data in R - The Basics](https://www.neonscience.org/resources/learning-hub/tutorials/raster-data-r).
+
+* [Intro to Raster Data](https://datacarpentry.org/r-raster-vector-geospatial/01-raster-structure/index.html).
+
+* [Earth Analytics Course: Learn Data Science](https://www.earthdatascience.org/courses/earth-analytics/)
+
+* Mapview [popup functions](https://environmentalinformatics-marburg.github.io/mapview/popups/html/popups.html).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
